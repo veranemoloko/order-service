@@ -3,14 +3,14 @@ package kafka
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/segmentio/kafka-go"
-
 	model "order/internal/entity"
+
+	"github.com/segmentio/kafka-go"
 )
 
 // Consumer consumes messages from a Kafka topic and validates orders.
@@ -32,8 +32,9 @@ func NewConsumer(broker, topic, groupID string) *Consumer {
 }
 
 // Start begins consuming messages from Kafka and processes valid orders using the handle function.
-func (c *Consumer) Start(ctx context.Context, handle func(orders []model.Order)) error {
-	log.Println("Kafka consumer started...")
+func (c *Consumer) Start(ctx context.Context, handle func(orders []model.Order) error) error {
+	slog.Info("Kafka consumer started")
+	defer c.reader.Close()
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -43,7 +44,7 @@ func (c *Consumer) Start(ctx context.Context, handle func(orders []model.Order))
 
 	go func() {
 		<-sigchan
-		log.Println("Stopping Kafka consumer...")
+		slog.Info("Stopping Kafka consumer...")
 		cancel()
 	}()
 
@@ -53,7 +54,7 @@ func (c *Consumer) Start(ctx context.Context, handle func(orders []model.Order))
 			if ctx.Err() != nil {
 				return nil
 			}
-			log.Printf("error reading message: %v", err)
+			slog.Error("error reading message", slog.String("error", err.Error()))
 			continue
 		}
 
@@ -64,7 +65,7 @@ func (c *Consumer) Start(ctx context.Context, handle func(orders []model.Order))
 			// If not an array, try parsing as a single order
 			var order model.Order
 			if err := json.Unmarshal(m.Value, &order); err != nil {
-				log.Printf("failed to unmarshal order: %v", err)
+				slog.Error("failed to unmarshal order", slog.String("error", err.Error()))
 				continue
 			}
 			orders = append(orders, order)
@@ -73,16 +74,24 @@ func (c *Consumer) Start(ctx context.Context, handle func(orders []model.Order))
 		validOrders := make([]model.Order, 0, len(orders))
 		for _, order := range orders {
 			if err := ValidateOrder(&order); err != nil {
-				log.Printf("invalid order %s: %v", order.OrderUID, err)
+				slog.Warn("invalid order", slog.String("order_uid", order.OrderUID), slog.String("error", err.Error()))
 				continue
 			}
 			validOrders = append(validOrders, order)
 		}
 
-		if len(validOrders) > 0 {
-			handle(validOrders)
-		} else {
-			log.Println("No valid orders found")
+		if len(validOrders) == 0 {
+			slog.Warn("no valid orders found")
+			continue
+		}
+
+		if err := handle(validOrders); err != nil {
+			slog.Error("failed to handle orders", slog.String("error", err.Error()))
+			continue
+		}
+
+		if err := c.reader.CommitMessages(ctx, m); err != nil {
+			slog.Error("failed to commit message", slog.String("error", err.Error()))
 		}
 	}
 }

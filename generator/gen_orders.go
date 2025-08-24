@@ -25,7 +25,6 @@ func main() {
 
 	updateOrders := generateUpdateOrders(goodOrders, r)
 	saveJSON(filepath.Join(outputDir, "orders_update.json"), updateOrders)
-	appendUID(filepath.Join(outputDir, "uids.txt"), updateOrders)
 
 	badOrders := generateBadOrders(goodOrders)
 	saveJSON(filepath.Join(outputDir, "orders_bad.json"), badOrders)
@@ -52,11 +51,20 @@ func generateUpdateOrders(baseOrders []model.Order, r *rand.Rand) []model.Order 
 
 func generateBadOrders(goodOrders []model.Order) []model.Order {
 	badOrders := make([]model.Order, 0, len(goodOrders))
+	invalidUIDCounter := 1
+
 	for _, order := range goodOrders {
 		bad := order
-		bad.OrderUID = ""
+		bad.OrderUID = fmt.Sprintf("invalid_uid_%03d", invalidUIDCounter)
+		bad.Payment.OrderUID = bad.OrderUID
+		bad.Payment.Transaction = bad.OrderUID
+		for i := range bad.Items {
+			bad.Items[i].OrderUID = bad.OrderUID
+			bad.Items[i].Rid = bad.OrderUID + "_item1"
+		}
 		bad.Payment.Amount = -100
 		badOrders = append(badOrders, bad)
+		invalidUIDCounter++
 	}
 	return badOrders
 }

@@ -1,21 +1,21 @@
 package config
 
 import (
-	"log"
+	"log/slog"
 	"os"
 	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
-// Config holds the application configuration.
+// Config holds the application
 type Config struct {
 	DB      DBConfig
 	Kafka   KafkaConfig
 	Service ServiceConfig
 }
 
-// DBConfig holds the database configuration.
+// DBConfig holds the database
 type DBConfig struct {
 	User     string
 	Password string
@@ -24,28 +24,29 @@ type DBConfig struct {
 	Port     string
 }
 
-// KafkaConfig holds the Kafka configuration.
+// KafkaConfig holds the kafka
 type KafkaConfig struct {
 	Broker string
 	Topic  string
 	Group  string
 }
 
-// ServiceConfig holds the service-specific configuration.
+// ServiceConfig holds the service-specific configuration
 type ServiceConfig struct {
 	CacheSize int
 	HTTPPort  string
 }
 
-// LoadConfig loads configuration from environment variables and returns a Config object.
+// LoadConfig loads configuration from environment variables and returns a сonfig
 func LoadConfig() *Config {
 	if err := godotenv.Load(); err != nil {
-		log.Println(".env not found")
+		slog.Warn(".env file not found, using environment variables")
 	}
 
 	cacheSize, err := strconv.Atoi(getEnv("CACHE_SIZE", "5"))
 	if err != nil {
-		log.Fatalf("CACHE_SIZE: %v", err)
+		slog.Error("Invalid CACHE_SIZE", "err", err)
+		os.Exit(1)
 	}
 
 	return &Config{
@@ -68,7 +69,7 @@ func LoadConfig() *Config {
 	}
 }
 
-// getEnv returns the value of the environment variable or the default value if not set.
+// returns the value of the environment variable or the default value if not set
 func getEnv(key, defaultVal string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value

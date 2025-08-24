@@ -1,19 +1,21 @@
 package cache
 
 import (
-	model "order/internal/entity"
+	"log/slog"
 	"sync"
+
+	model "order/internal/entity"
 
 	lru "github.com/hashicorp/golang-lru/v2"
 )
 
-// OrderCache is a thread-safe LRU cache for storing Orders
+// OrderCache is a thread-safe LRU cache for storing orders
 type OrderCache struct {
 	mu    sync.RWMutex
 	cache *lru.Cache[string, *model.Order]
 }
 
-// NewOrderCache creates a new LRU cache with a maximum of size elements
+// NewOrderCache creates a new LRU cache with the given size
 func NewOrderCache(size int) (*OrderCache, error) {
 	c, err := lru.New[string, *model.Order](size)
 	if err != nil {
@@ -22,38 +24,32 @@ func NewOrderCache(size int) (*OrderCache, error) {
 	return &OrderCache{cache: c}, nil
 }
 
-// Get returns an Order by UID if it exists in the cache
+// Get returns the order by UID if it exists in the cache
 func (oc *OrderCache) Get(uid string) (*model.Order, bool) {
 	oc.mu.RLock()
 	defer oc.mu.RUnlock()
 
 	order, ok := oc.cache.Get(uid)
-	return order, ok
+	if !ok {
+		return nil, false
+	}
+	return order, true
 }
 
-// Set adds or updates an Order in the cache
+// Set adds or updates an order in the cache
 func (oc *OrderCache) Set(uid string, order *model.Order) {
 	oc.mu.Lock()
 	defer oc.mu.Unlock()
 
 	oc.cache.Add(uid, order)
+	slog.Debug("cache set", slog.String("uid", uid))
 }
 
-// Delete removes an Order from the cache by UID
+// Delete removes an order from the cache by UID
 func (oc *OrderCache) Delete(uid string) {
 	oc.mu.Lock()
 	defer oc.mu.Unlock()
 
 	oc.cache.Remove(uid)
-}
-
-// Keys returns a slice of all UIDs currently stored in the cache
-func (oc *OrderCache) Keys() []string {
-	oc.mu.RLock()
-	defer oc.mu.RUnlock()
-
-	keys := oc.cache.Keys()
-	result := make([]string, len(keys))
-	copy(result, keys)
-	return result
+	slog.Debug("cache delete", slog.String("uid", uid))
 }

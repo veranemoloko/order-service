@@ -2,18 +2,18 @@ package http
 
 import (
 	"net/http"
-	"order/internal/infrastructure/database"
+	db "order/internal/infrastructure/postgres"
 
 	"github.com/gin-gonic/gin"
 )
 
 // Handler handles HTTP requests and interacts with the database repository.
 type Handler struct {
-	repo *database.Repository
+	repo *db.Repository
 }
 
 // NewHandler creates a new Handler with the given repository.
-func NewHandler(repo *database.Repository) *Handler {
+func NewHandler(repo *db.Repository) *Handler {
 	return &Handler{repo: repo}
 }
 

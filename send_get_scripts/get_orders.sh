@@ -12,9 +12,20 @@ while IFS= read -r uid; do
 
   echo "Requesting UID: $uid"
 
-  status=$(curl -s -o >(cat) -w "%{http_code}" "${BASE_URL}/${uid}")
+  response=$(curl -s -w "\n%{http_code}" "${BASE_URL}/${uid}")
   
+  status=$(echo "$response" | tail -n1)
+
+  body=$(echo "$response" | sed '$d')
+
   echo "HTTP Status: $status"
+  
+  if echo "$body" | jq . >/dev/null 2>&1; then
+    echo "$body" | jq .
+  else
+    echo "$body"
+  fi
+
   echo "--------------------------"
   
   sleep 3

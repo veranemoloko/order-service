@@ -28,3 +28,11 @@ make run
 ```bash
 make post-get-order
 ```
+
+#### Сервис будет доступен на http://localhost:8081
+```http
+GET /orders/:uid
+```
+#### Kafka-UI доступен на http://localhost:8080 для мониторинга топиков и сообщений
+
+

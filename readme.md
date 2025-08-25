@@ -22,7 +22,7 @@ make up
 ```bash
 make run
 ```
-#### 4. In another terminal, you can send and retrieve orders using the scripts and generate test orders:
+#### 4. In another terminal, you can send and retrieve orders using the scripts and generated test orders:
 ```bash
 make post-get-order
 ```

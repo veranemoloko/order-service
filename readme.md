@@ -1,7 +1,7 @@
 ## Order Service
 
 ### Description
-#### This project is a microservice for processing orders. Key features include:
+#### This project is a service for processing orders. Key features include:
 - Receiving and storing orders via Kafka.
 - Caching orders for fast access. The cache size can be configured in the .env file.
 - REST API for retrieving orders by UID. (GET /orders/:uid)

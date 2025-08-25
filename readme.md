@@ -1,36 +1,36 @@
 ## Order Service
 
-### Описание
-- Проект представляет собой микросервис для обработки заказов. Основные функции:
+### Description
+#### This project is a microservice for processing orders. Key features include:
+- Receiving and storing orders via Kafka.
+- Caching orders for fast access. The cache size can be configured in the .env file.
+- REST API for retrieving orders by UID. (GET /orders/:uid)
+- Generating test orders (both valid and invalid) for testing purposes.
+- Graceful shutdown of the HTTP server and Kafka consumer upon receiving termination signals.
 
-- Получение и сохранение заказов через Kafka.
+### Prerequisites
+- Docker & Docker Compose
+- Go (1.25.0)
 
-- Кэширование заказов для быстрого доступа.
-
-- REST API для получения заказов по UID.
-
-- Генерация тестовых заказов (корректных и некорректных) для тестирования.
-
-- Сервис корректно завершает работу HTTP сервера и Kafka при получении сигналов завершения.
-
-
-### Установка и запуск:
-#### 1.Клонировать репозиторий и настроить .env
-#### 2.Запустить сборку всех сервисов через docker-сompose
+### Installation and Run
+#### 1. Clone the repository and configure .env
+#### 2. Build and start all services using docker-compose:
 ```bash
 make up
 ```
-#### 3.Запустить сервис и создать Kafka-топик "orders":
+#### 3. Run the service and create the Kafka topic "orders":
 ```bash
 make run
 ```
-#### 4. В другом терминале можно отправить и получить заказы с помощью скриптов и генерация тестовых заказов:
+#### 4. In another terminal, you can send and retrieve orders using the scripts and generate test orders:
 ```bash
 make post-get-order
 ```
 
-#### Сервис будет доступен на http://localhost:8081/orders/:uid
+#### The service will be accessible at: 
+- http://localhost:8081/orders/:uid
 
-#### Kafka-UI доступен на http://localhost:8080 для мониторинга топиков и сообщений
+#### Kafka UI is available at:
+- http://localhost:8080 for monitoring topics and messages.
 
 

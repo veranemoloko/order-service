@@ -1,4 +1,4 @@
-.PHONY: up down gen topic-create topic-list check-data run check-go rebuild clean
+.PHONY: up down gen topic-create topic-list check-data run check-go rebuild clean-data
 
 MAKEFLAGS += --no-print-directory
 
@@ -35,10 +35,10 @@ run:
 	-@$(MAKE) topic-create
 	@sleep 3
 	@echo "\033[1;35m--------- Running service ---------\033[0m"
-	@go run cmd/service/main.go
+	@go run cmd/main.go
 
 post-get-order:
-	@$(MAKE) clean
+	@$(MAKE) clean-data
 	@echo "\033[1;35m--------- Generating orders ---------\033[0m"
 	@$(MAKE) gen
 	@sleep 3
@@ -49,10 +49,10 @@ post-get-order:
 	@./send_get_scripts/get_orders.sh
 	
 
-clean:
+clean-data:
 	rm -rf send_get_scripts/sample_data
 
-rebuild: clean down run
+rebuild: clean-data down up
 
 check-go:
 	golint ./...

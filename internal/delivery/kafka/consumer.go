@@ -21,11 +21,9 @@ type Consumer struct {
 // NewConsumer creates a new Kafka consumer with the given broker, topic, and group ID.
 func NewConsumer(broker, topic, groupID string) *Consumer {
 	r := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:  []string{broker},
-		Topic:    topic,
-		GroupID:  groupID,
-		MinBytes: 10e3, // 10KB
-		MaxBytes: 10e6, // 10MB
+		Brokers: []string{broker},
+		Topic:   topic,
+		GroupID: groupID,
 	})
 
 	return &Consumer{reader: r}
@@ -59,16 +57,8 @@ func (c *Consumer) Start(ctx context.Context, handle func(orders []model.Order) 
 		}
 
 		var orders []model.Order
-
-		// Try to parse as an array first
 		if err := json.Unmarshal(m.Value, &orders); err != nil || len(orders) == 0 {
-			// If not an array, try parsing as a single order
-			var order model.Order
-			if err := json.Unmarshal(m.Value, &order); err != nil {
-				slog.Error("failed to unmarshal order", slog.String("error", err.Error()))
-				continue
-			}
-			orders = append(orders, order)
+			slog.Error("failed to unmarshal order", slog.String("error", err.Error()))
 		}
 
 		validOrders := make([]model.Order, 0, len(orders))
@@ -78,11 +68,6 @@ func (c *Consumer) Start(ctx context.Context, handle func(orders []model.Order) 
 				continue
 			}
 			validOrders = append(validOrders, order)
-		}
-
-		if len(validOrders) == 0 {
-			slog.Warn("no valid orders found")
-			continue
 		}
 
 		if err := handle(validOrders); err != nil {

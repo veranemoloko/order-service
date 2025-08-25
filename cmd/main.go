@@ -25,7 +25,6 @@ func main() {
 	cfg := config.LoadConfig()
 
 	initLogger()
-	slog.Info("Config loaded", "config", cfg)
 
 	orderCache := initCache(cfg)
 	repo := initDBAndRepo(cfg, orderCache)

@@ -1,20 +1,36 @@
-## Order Service
+# 📦 Order Service
 
-### Description
-#### This project is a service for processing orders. Key features include:
-- Receiving and storing orders via Kafka.
-- Caching orders for fast access. The cache size can be configured in the .env file.
-- REST API for retrieving orders by UID. (GET /orders/:uid)
-- Generating test orders (both valid and invalid) for testing purposes.
-- Graceful shutdown of the HTTP server and Kafka consumer upon receiving termination signals.
+## ✨ Description
+This project is a service for processing orders.  
 
-### Prerequisites
-- Docker & Docker Compose
-- Go (1.25.0)
+### 🔑 Key features:
+- 📥 Receiving and storing orders via **Kafka**.  
+- 🗑️ **Dead Letter Queue (DLQ)**: invalid orders are redirected to a separate Kafka topic.  
+- ⚡ **Caching** orders for fast access (cache size is configurable in `.env`).  
+- 🌐 **REST API**: retrieve orders by UID → `GET /orders/:uid`.  
+- 🧪 Generate test orders (valid ✅ and invalid ❌).  
+- 🛑 **Graceful shutdown** of the HTTP server and Kafka consumer.  
+- 📝 **Flexible logging**: configure **log level** and **output format (JSON or text)** via `.env`.  
 
-### Installation and Run
-#### 1. Clone the repository and configure .env
-#### 2. Build and start all services using docker-compose:
+---
+
+## ⚙️ Prerequisites
+- 🐳 Docker & Docker Compose  
+- 🐹 Go (1.25.0)  
+
+📍 **Service endpoint:**  
+- http://localhost:8081/orders/:uid  
+
+📊 **Kafka UI:**  
+- http://localhost:8080  
+
+---
+
+## 🚀 Installation and Run
+
+### 1️⃣ Clone the repository and configure `.env`
+
+### 2️⃣ Build and start all services
 ```bash
 make up
 ```
@@ -26,11 +42,3 @@ make run
 ```bash
 make post-get-order
 ```
-
-#### The service will be accessible at: 
-- http://localhost:8081/orders/:uid
-
-#### Kafka UI is available at:
-- http://localhost:8080 for monitoring topics and messages.
-
-

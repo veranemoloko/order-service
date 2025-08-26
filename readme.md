@@ -4,13 +4,13 @@
 This project is a service for processing orders.  
 
 ### 🔑 Key features:
-- 📥 Receiving and storing orders via **Kafka**.  
-- 🗑️ **Dead Letter Queue (DLQ)**: invalid orders are redirected to a separate Kafka topic.  
-- ⚡ **Caching** orders for fast access (cache size is configurable in `.env`).  
-- 🌐 **REST API**: retrieve orders by UID → `GET /orders/:uid`.  
-- 🧪 Generate test orders (valid ✅ and invalid ❌).  
-- 🛑 **Graceful shutdown** of the HTTP server and Kafka consumer.  
-- 📝 **Flexible logging**: configure **log level** and **output format (JSON or text)** via `.env`.  
+-  Receiving and storing orders via **Kafka**.  
+-  **Dead Letter Queue (DLQ)**: invalid orders are redirected to a separate Kafka topic.  
+-  **Caching** orders for fast access (cache size is configurable in `.env`).  
+-  **REST API**: retrieve orders by UID → `GET /orders/:uid`.  
+-  Generate test orders (valid ✅ and invalid ❌).  
+- **Graceful shutdown** of the HTTP server and Kafka consumer.  
+-  **Flexible logging**: configure **log level** and **output format (JSON or text)** via `.env`.  
 
 ---
 

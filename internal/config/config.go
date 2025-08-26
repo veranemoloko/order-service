@@ -26,10 +26,10 @@ type DBConfig struct {
 
 // KafkaConfig holds the Kafka configuration
 type KafkaConfig struct {
-	Broker    string
-	Topic     string
-	Topic_DLQ string
-	Group     string
+	Broker   string
+	Topic    string
+	TopicDLQ string
+	Group    string
 }
 
 // ServiceConfig holds the service-specific configuration
@@ -61,10 +61,10 @@ func LoadConfig() *Config {
 			Port:     getEnv("DB_PORT", "5432"),
 		},
 		Kafka: KafkaConfig{
-			Broker:    getEnv("KAFKA_BROKER", "host.docker.internal:9092"),
-			Topic:     getEnv("KAFKA_TOPIC", "orders"),
-			Topic_DLQ: getEnv("KAFKA_TOPIC_DLQ", "orders_dlq"),
-			Group:     getEnv("KAFKA_GROUP", "order-consumer-group"),
+			Broker:   getEnv("KAFKA_BROKER", "host.docker.internal:9092"),
+			Topic:    getEnv("KAFKA_TOPIC", "orders"),
+			TopicDLQ: getEnv("KAFKA_TOPIC_DLQ", "orders_dlq"),
+			Group:    getEnv("KAFKA_GROUP", "order-consumer-group"),
 		},
 		Service: ServiceConfig{
 			CacheSize: cacheSize,

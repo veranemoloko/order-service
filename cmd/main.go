@@ -34,7 +34,7 @@ func main() {
 		cfg.Kafka.Broker,
 		cfg.Kafka.Topic,
 		cfg.Kafka.Group,
-		cfg.Kafka.Topic_DLQ,
+		cfg.Kafka.TopicDLQ,
 	)
 
 	go runKafkaConsumer(ctx, consumer, repo)
@@ -53,7 +53,7 @@ func initLogger(cfg *config.ServiceConfig) {
 			TimeFormat: time.Kitchen,
 			NoColor:    false,
 		})
-	default: // json
+	default:
 		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level: cfg.LogLevel,
 		})

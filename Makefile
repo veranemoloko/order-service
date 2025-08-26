@@ -52,7 +52,6 @@ run:
 	@go run cmd/main.go
 
 post-get-order:
-	@$(MAKE) clean-data
 	@echo "\033[1;35m--------- Generating orders ---------\033[0m"
 	@$(MAKE) gen
 	@sleep 3

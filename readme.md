@@ -34,11 +34,12 @@ This project is a service for processing orders.
 ```bash
 make up
 ```
-#### 3. Run the service and create the Kafka topic "orders":
+#### 3️⃣ Run the service and create the Kafka topic "orders":
 ```bash
 make run
 ```
-#### 4. In another terminal, you can send and retrieve orders using the scripts and generated test orders:
+#### 4️⃣ In another terminal, you can send and retrieve orders using the scripts and generated test orders:
 ```bash
 make post-get-order
 ```
+![Demo](docs/order1.gif)

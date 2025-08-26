@@ -21,17 +21,22 @@ import (
 )
 
 func main() {
-
 	cfg := config.LoadConfig()
 
-	initLogger()
+	initLogger(&cfg.Service)
 
 	orderCache := initCache(cfg)
-	repo := initDBAndRepo(cfg, orderCache)
+	repo := initRepo(cfg, orderCache)
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	consumer := kafka.NewConsumer(cfg.Kafka.Broker, cfg.Kafka.Topic, cfg.Kafka.Group)
+	consumer := kafka.NewConsumer(
+		cfg.Kafka.Broker,
+		cfg.Kafka.Topic,
+		cfg.Kafka.Group,
+		cfg.Kafka.Topic_DLQ,
+	)
+
 	go runKafkaConsumer(ctx, consumer, repo)
 
 	srv := runHTTPServer(cfg, repo)
@@ -39,13 +44,25 @@ func main() {
 	gracefulShutdown(srv, consumer, cancel)
 }
 
-func initLogger() {
-	slog.SetDefault(slog.New(tint.NewHandler(os.Stdout, &tint.Options{
-		Level:      slog.LevelInfo,
-		TimeFormat: time.Kitchen,
-		NoColor:    false,
-	})))
-	slog.Info("Logger initialized")
+func initLogger(cfg *config.ServiceConfig) {
+	var handler slog.Handler
+	switch cfg.LogFormat {
+	case "text":
+		handler = tint.NewHandler(os.Stdout, &tint.Options{
+			Level:      cfg.LogLevel,
+			TimeFormat: time.Kitchen,
+			NoColor:    false,
+		})
+	default: // json
+		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: cfg.LogLevel,
+		})
+	}
+
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
+
+	slog.Info("Logger initialized", "level", cfg.LogLevel.String(), "format", cfg.LogFormat)
 }
 
 func initCache(cfg *config.Config) *cache.OrderCache {
@@ -58,7 +75,7 @@ func initCache(cfg *config.Config) *cache.OrderCache {
 	return c
 }
 
-func initDBAndRepo(cfg *config.Config, orderCache *cache.OrderCache) *database.Repository {
+func initRepo(cfg *config.Config, orderCache *cache.OrderCache) *database.Repository {
 	db, err := database.NewPostgresDB(cfg.DB)
 	if err != nil {
 		slog.Error("Database connection failed", "err", err)
@@ -77,7 +94,7 @@ func runKafkaConsumer(ctx context.Context, consumer *kafka.Consumer, repo *datab
 	err := consumer.Start(ctx, func(orders []model.Order) error {
 		for i := range orders {
 			cLogger.Debug("Processing order", "order", orders[i])
-			_, err := repo.InsertOrUpdateOrder(&orders[i])
+			_, err := repo.AddOrder(&orders[i])
 
 			if err != nil {
 				cLogger.Error("Failed to save order", "order_uid", orders[i].OrderUID, "err", err)

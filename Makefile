@@ -1,4 +1,4 @@
-.PHONY: up down gen topic-create topic-list check-data run check-go rebuild clean-data
+.PHONY: up down gen topic-create topic-list check-data run check-go rebuild
 
 MAKEFLAGS += --no-print-directory
 
@@ -9,9 +9,7 @@ up:
 down:
 	docker-compose down -v
 
-# --- Data generation ---
-gen:
-	go run generator/gen_orders.go
+rebuild: down up
 
 # --- Kafka ---
 topic-create:
@@ -19,6 +17,11 @@ topic-create:
 		kafka-topics --create --topic orders \
 		--partitions 2 --replication-factor 1 \
 		--bootstrap-server kafka:9092 || true
+
+	docker-compose exec -T kafka \
+  		kafka-topics --create --topic orders-dlq \
+  		--partitions 1 --replication-factor 1 \
+  		--bootstrap-server kafka:9092 || true
 
 topic-list:
 	docker-compose exec -T kafka \
@@ -30,6 +33,17 @@ check-data:
 		--topic orders \
 		--from-beginning
 
+	docker exec -it kafka kafka-console-consumer \
+		--bootstrap-server localhost:9092 \
+		--topic orders_dlq \
+		--from-beginning
+
+# --- Data generation ---
+gen:
+	rm -rf send_get_scripts/sample_data
+	go run generator/gen_orders.go
+
+# --- Service --- 
 run:
 	@echo "\033[1;35m--------- Creating Kafka topic 'orders' ---------\033[0m"
 	-@$(MAKE) topic-create
@@ -48,12 +62,6 @@ post-get-order:
 	@echo "\033[1;35m--------- Getting orders ---------\033[0m"
 	@./send_get_scripts/get_orders.sh
 	
-
-clean-data:
-	rm -rf send_get_scripts/sample_data
-
-rebuild: clean-data down up
-
 check-go:
 	golint ./...
 	go vet ./...

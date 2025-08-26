@@ -25,6 +25,7 @@ func main() {
 
 	updateOrders := generateUpdateOrders(goodOrders, r)
 	saveJSON(filepath.Join(outputDir, "orders_update.json"), updateOrders)
+	appendUID(filepath.Join(outputDir, "uids.txt"), updateOrders)
 
 	badOrders := generateBadOrders(goodOrders)
 	saveJSON(filepath.Join(outputDir, "orders_bad.json"), badOrders)

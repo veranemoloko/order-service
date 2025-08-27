@@ -105,3 +105,23 @@ func (r *Repository) AddOrder(order *model.Order) (*model.Order, error) {
 
 	return order, nil
 }
+
+// RestoreCache loads orders from DB into cache.
+// If maxSize > 0, only the latest maxSize orders are loaded.
+func (r *Repository) RestoreCache(maxSize int) error {
+	var orders []model.Order
+	query := r.db.Preload("Delivery").Preload("Payment").Preload("Items").Order("date_created DESC")
+	if maxSize > 0 {
+		query = query.Limit(maxSize)
+	}
+	if err := query.Find(&orders).Error; err != nil {
+		return err
+	}
+
+	for i := range orders {
+		r.cache.Set(orders[i].OrderUID, &orders[i])
+	}
+
+	slog.Info("cache restored from database", slog.Int("orders_count", len(orders)))
+	return nil
+}

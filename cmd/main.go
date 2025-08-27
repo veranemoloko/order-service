@@ -85,6 +85,11 @@ func initRepo(cfg *config.Config, orderCache *cache.OrderCache) *database.Reposi
 	repo := database.NewRepository(db, orderCache)
 	slog.Info("Repository initialized")
 
+	if err := repo.RestoreCache(cfg.Service.CacheSize); err != nil {
+		slog.Error("Failed to restore cache from DB", "err", err)
+		os.Exit(1)
+	}
+
 	return repo
 }
 

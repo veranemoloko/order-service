@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	model "order/internal/entity"
+	"order/internal/model"
 
 	"github.com/go-playground/validator/v10"
 )

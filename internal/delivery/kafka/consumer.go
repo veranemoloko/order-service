@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	model "order/internal/entity"
+	"order/internal/model"
 
 	"github.com/segmentio/kafka-go"
 )

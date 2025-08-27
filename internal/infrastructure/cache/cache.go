@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"sync"
 
-	model "order/internal/entity"
+	"order/internal/model"
 
 	lru "github.com/hashicorp/golang-lru/v2"
 )

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	model "order/internal/entity"
+	"order/internal/model"
 )
 
 func main() {
@@ -57,12 +57,7 @@ func generateBadOrders(goodOrders []model.Order) []model.Order {
 	for _, order := range goodOrders {
 		bad := order
 		bad.OrderUID = fmt.Sprintf("invalid_uid_%03d", invalidUIDCounter)
-		bad.Payment.OrderUID = bad.OrderUID
 		bad.Payment.Transaction = bad.OrderUID
-		for i := range bad.Items {
-			bad.Items[i].OrderUID = bad.OrderUID
-			bad.Items[i].Rid = bad.OrderUID + "_item1"
-		}
 		bad.Payment.Amount = -100
 		badOrders = append(badOrders, bad)
 		invalidUIDCounter++
@@ -88,17 +83,15 @@ func newOrder(r *rand.Rand) model.Order {
 		DateCreated:       time.Now(),
 		OofShard:          "1",
 		Delivery: model.Delivery{
-			OrderUID: uid,
-			Name:     "Test " + randString(5, r),
-			Phone:    fmt.Sprintf("+972%07d", r.Intn(10000000)),
-			Zip:      fmt.Sprintf("%07d", r.Intn(10000000)),
-			City:     "City" + randString(3, r),
-			Address:  "Street " + randString(4, r),
-			Region:   "Region " + randString(3, r),
-			Email:    "test" + randString(5, r) + "@gmail.com",
+			Name:    "Test " + randString(5, r),
+			Phone:   fmt.Sprintf("+972%07d", r.Intn(10000000)),
+			Zip:     fmt.Sprintf("%07d", r.Intn(10000000)),
+			City:    "City" + randString(3, r),
+			Address: "Street " + randString(4, r),
+			Region:  "Region " + randString(3, r),
+			Email:   "test" + randString(5, r) + "@gmail.com",
 		},
 		Payment: model.Payment{
-			OrderUID:     uid,
 			Transaction:  uid,
 			RequestID:    "",
 			Currency:     "USD",
@@ -112,7 +105,6 @@ func newOrder(r *rand.Rand) model.Order {
 		},
 		Items: []model.Item{
 			{
-				OrderUID:    uid,
 				ChrtID:      r.Intn(1000000),
 				TrackNumber: track,
 				Price:       r.Intn(500) + 100,

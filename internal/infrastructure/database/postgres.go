@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"order/internal/config"
-	model "order/internal/entity"
+	"order/internal/model"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -38,14 +38,6 @@ func NewPostgresDB(cfg config.DBConfig) (*gorm.DB, error) {
 		&model.Item{},
 	); err != nil {
 		return nil, fmt.Errorf("failed to perform migrations: %w", err)
-	}
-
-	// Create a unique index for (order_uid, rid) in the items table
-	if err := db.Exec(`
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_order_rid
-    ON items (order_uid, rid)
-`).Error; err != nil {
-		return nil, fmt.Errorf("failed to create unique index on items(order_uid, rid): %w", err)
 	}
 
 	return db, nil

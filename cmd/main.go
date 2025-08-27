@@ -12,9 +12,9 @@ import (
 	"order/internal/config"
 	httpDelivery "order/internal/delivery/http"
 	"order/internal/delivery/kafka"
-	model "order/internal/entity"
 	"order/internal/infrastructure/cache"
-	database "order/internal/infrastructure/postgres"
+	"order/internal/infrastructure/database"
+	"order/internal/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lmittmann/tint"

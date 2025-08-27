@@ -2,7 +2,7 @@ package http
 
 import (
 	"net/http"
-	db "order/internal/infrastructure/postgres"
+	db "order/internal/infrastructure/database"
 
 	"github.com/gin-gonic/gin"
 )

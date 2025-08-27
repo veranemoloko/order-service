@@ -11,6 +11,8 @@ This project is a service for processing orders.
 -  Generate test orders (valid ✅ and invalid ❌).  
 - **Graceful shutdown** of the HTTP server and Kafka consumer.  
 -  **Flexible logging**: configure **log level** and **output format (JSON or text)** via `.env`.  
+- **Cache warm-up on startup**: preloads recent orders from the database into the cache for faster first access.
+
 
 ---
 

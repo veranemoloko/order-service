@@ -23,13 +23,26 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:9092,INTERNAL://host.docker.internal:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"  
     healthcheck:
       test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
       interval: 5s
       timeout: 5s
       retries: 15
       start_period: 10s
+
+  kafka-init-topics:
+    image: confluentinc/cp-kafka:7.5.3
+    container_name: kafka_init_topics
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "
+      kafka-topics --create --if-not-exists --topic orders --partitions 2 --replication-factor 1 --bootstrap-server kafka:9092 &&
+      kafka-topics --create --if-not-exists --topic orders-dlq --partitions 1 --replication-factor 1 --bootstrap-server kafka:9092
+      "
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest

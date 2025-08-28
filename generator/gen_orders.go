@@ -1,9 +1,11 @@
 package main
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
-	"math/rand"
+	"math/big"
+	mathrand "math/rand"
 	"os"
 	"path/filepath"
 	"time"
@@ -11,28 +13,42 @@ import (
 	"order/internal/model"
 )
 
+const (
+	outputDir        = "send_get_scripts/sample_data"
+	goodOrdersFile   = "orders_1.json"
+	updateOrdersFile = "orders_update.json"
+	badOrdersFile    = "orders_bad.json"
+	uidFile          = "uids.txt"
+	numGoodOrders    = 6
+)
+
 func main() {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	outputDir := "send_get_scripts/sample_data"
+	r := mathrand.New(mathrand.NewSource(time.Now().UnixNano()))
+
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
 		fmt.Println("Error creating folder:", err)
 		return
 	}
 
-	goodOrders := generateGoodOrders(6, r)
-	saveJSON(filepath.Join(outputDir, "orders_1.json"), goodOrders)
-	appendUID(filepath.Join(outputDir, "uids.txt"), goodOrders)
+	if err := os.WriteFile(filepath.Join(outputDir, uidFile), []byte{}, 0644); err != nil {
+		fmt.Println("Error clearing UID file:", err)
+		return
+	}
+
+	goodOrders := generateGoodOrders(numGoodOrders, r)
+	saveJSON(filepath.Join(outputDir, goodOrdersFile), goodOrders)
+	appendUID(filepath.Join(outputDir, uidFile), goodOrders)
 
 	updateOrders := generateUpdateOrders(goodOrders, r)
-	saveJSON(filepath.Join(outputDir, "orders_update.json"), updateOrders)
-	appendUID(filepath.Join(outputDir, "uids.txt"), updateOrders)
+	saveJSON(filepath.Join(outputDir, updateOrdersFile), updateOrders)
+	appendUID(filepath.Join(outputDir, uidFile), updateOrders)
 
 	badOrders := generateBadOrders(goodOrders)
-	saveJSON(filepath.Join(outputDir, "orders_bad.json"), badOrders)
-	appendUID(filepath.Join(outputDir, "uids.txt"), badOrders)
+	saveJSON(filepath.Join(outputDir, badOrdersFile), badOrders)
+	appendUID(filepath.Join(outputDir, uidFile), badOrders)
 }
 
-func generateGoodOrders(n int, r *rand.Rand) []model.Order {
+func generateGoodOrders(n int, r *mathrand.Rand) []model.Order {
 	orders := make([]model.Order, 0, n)
 	for i := 0; i < n; i++ {
 		orders = append(orders, newOrder(r))
@@ -40,7 +56,7 @@ func generateGoodOrders(n int, r *rand.Rand) []model.Order {
 	return orders
 }
 
-func generateUpdateOrders(baseOrders []model.Order, r *rand.Rand) []model.Order {
+func generateUpdateOrders(baseOrders []model.Order, r *mathrand.Rand) []model.Order {
 	updates := make([]model.Order, 0, len(baseOrders))
 	for _, order := range baseOrders {
 		order.Items[0].Price += r.Intn(200)
@@ -65,9 +81,9 @@ func generateBadOrders(goodOrders []model.Order) []model.Order {
 	return badOrders
 }
 
-func newOrder(r *rand.Rand) model.Order {
-	uid := "b563" + randString(12, r)
-	track := "WBILM" + randString(8, r)
+func newOrder(r *mathrand.Rand) model.Order {
+	uid := "b563" + randString(12)
+	track := "WBILM" + randString(8)
 	sizes := []string{"S", "M", "L", "XL"}
 
 	return model.Order{
@@ -75,21 +91,21 @@ func newOrder(r *rand.Rand) model.Order {
 		TrackNumber:       track,
 		Entry:             "WBIL",
 		Locale:            "en",
-		InternalSignature: randString(10, r),
-		CustomerID:        "customer" + randString(5, r),
+		InternalSignature: randString(10),
+		CustomerID:        "customer" + randString(5),
 		DeliveryService:   "meest",
 		Shardkey:          fmt.Sprintf("%d", r.Intn(10)+1),
 		SmID:              r.Intn(100),
 		DateCreated:       time.Now(),
 		OofShard:          "1",
 		Delivery: model.Delivery{
-			Name:    "Test " + randString(5, r),
+			Name:    "Test " + randString(5),
 			Phone:   fmt.Sprintf("+972%07d", r.Intn(10000000)),
 			Zip:     fmt.Sprintf("%07d", r.Intn(10000000)),
-			City:    "City" + randString(3, r),
-			Address: "Street " + randString(4, r),
-			Region:  "Region " + randString(3, r),
-			Email:   "test" + randString(5, r) + "@gmail.com",
+			City:    "City" + randString(3),
+			Address: "Street " + randString(4),
+			Region:  "Region " + randString(3),
+			Email:   "test" + randString(5) + "@gmail.com",
 		},
 		Payment: model.Payment{
 			Transaction:  uid,
@@ -109,12 +125,12 @@ func newOrder(r *rand.Rand) model.Order {
 				TrackNumber: track,
 				Price:       r.Intn(500) + 100,
 				Rid:         uid + "_item1",
-				Name:        "Product " + randString(5, r),
+				Name:        "Product " + randString(5),
 				Sale:        r.Intn(30),
 				Size:        sizes[r.Intn(len(sizes))],
 				TotalPrice:  r.Intn(500) + 100,
 				NmID:        r.Intn(1000000),
-				Brand:       "Brand" + randString(3, r),
+				Brand:       "Brand" + randString(3),
 				Status:      202,
 			},
 		},
@@ -134,7 +150,7 @@ func saveJSON(filename string, data interface{}) {
 }
 
 func appendUID(filename string, orders []model.Order) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println("Error opening UID file:", err)
 		return
@@ -145,11 +161,15 @@ func appendUID(filename string, orders []model.Order) {
 	}
 }
 
-func randString(n int, r *rand.Rand) string {
+func randString(n int) string {
 	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, n)
-	for i := range b {
-		b[i] = letters[r.Intn(len(letters))]
+	result := make([]byte, n)
+	for i := range result {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		if err != nil {
+			panic(err)
+		}
+		result[i] = letters[num.Int64()]
 	}
-	return string(b)
+	return string(result)
 }

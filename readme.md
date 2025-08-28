@@ -44,4 +44,4 @@ make run
 ```bash
 make post-get-order
 ```
-![Demo](docs/order1.gif)
+![Demo](order1.gif)

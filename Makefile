@@ -11,33 +11,6 @@ down:
 
 rebuild: down up
 
-# --- Kafka ---
-topic-create:
-	docker-compose exec -T kafka \
-		kafka-topics --create --topic orders \
-		--partitions 2 --replication-factor 1 \
-		--bootstrap-server kafka:9092 || true
-
-	docker-compose exec -T kafka \
-  		kafka-topics --create --topic orders-dlq \
-  		--partitions 1 --replication-factor 1 \
-  		--bootstrap-server kafka:9092 || true
-
-topic-list:
-	docker-compose exec -T kafka \
-		kafka-topics --list --bootstrap-server kafka:9092
-
-check-data:
-	docker exec -it kafka kafka-console-consumer \
-		--bootstrap-server localhost:9092 \
-		--topic orders \
-		--from-beginning
-
-	docker exec -it kafka kafka-console-consumer \
-		--bootstrap-server localhost:9092 \
-		--topic orders_dlq \
-		--from-beginning
-
 # --- Data generation ---
 gen:
 	rm -rf send_get_scripts/sample_data
@@ -45,9 +18,6 @@ gen:
 
 # --- Service --- 
 run:
-	@echo "\033[1;35m--------- Creating Kafka topic 'orders' ---------\033[0m"
-	-@$(MAKE) topic-create
-	@sleep 3
 	@echo "\033[1;35m--------- Running service ---------\033[0m"
 	@go run cmd/main.go
 

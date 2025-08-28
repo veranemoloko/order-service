@@ -1,4 +1,4 @@
-.PHONY: up down gen topic-create topic-list check-data run check-go rebuild
+.PHONY: up down gen run check-go rebuild
 
 MAKEFLAGS += --no-print-directory
 
@@ -19,7 +19,7 @@ gen:
 # --- Service --- 
 run:
 	@echo "\033[1;35m--------- Running service ---------\033[0m"
-	@go run cmd/main.go
+	@go run cmd/order_app/main.go
 
 post-get-order:
 	@echo "\033[1;35m--------- Generating orders ---------\033[0m"

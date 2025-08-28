@@ -28,7 +28,7 @@ This project is a service for processing orders.
 
 ---
 
-<img width="1155" height="1174" alt="image" src="https://github.com/user-attachments/assets/25182828-4ed7-4c07-9ccd-8470d4779774" />
+<img width="600" height="600" alt="image" src="https://github.com/user-attachments/assets/25182828-4ed7-4c07-9ccd-8470d4779774" />
 
 ## 🚀 Installation and Run
 

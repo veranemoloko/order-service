@@ -28,41 +28,7 @@ This project is a service for processing orders.
 
 ---
 
-
-```mermaid
-flowchart TD
-    %% Producers
-    P[Test Orders] --> K[Kafka Topic]
-
-    %% Kafka consumer
-    K -->|valid| C[Service Consumer]
-    K -->|invalid| DLQ[Kafka DLQ]
-
-    %% Repository + DB + Cache
-    C --> R[Repository]
-    R -->|save| DB[(Postgres)]
-    R -->|save| Cache[In-Memory Cache]
-
-    %% Cache warm-up at startup
-    DB -.warmup.-> Cache
-    %% Cache miss fallback inside Repository
-    Cache -.miss.-> DB
-
-    %% REST API GET
-    API[API GET /orders/:uid] -->|request| R
-    R -->|read| Cache
-    Cache -->|response| API
-
-    %% Colors + black text
-    style P fill:#f9f,stroke:#333,stroke-width:2px,color:#000
-    style K fill:#bbf,stroke:#333,stroke-width:2px,color:#000
-    style DLQ fill:#fbb,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#bfb,stroke:#333,stroke-width:2px,color:#000
-    style R fill:#ffb,stroke:#333,stroke-width:2px,color:#000
-    style DB fill:#bbb,stroke:#333,stroke-width:2px,color:#000
-    style Cache fill:#fbf,stroke:#333,stroke-width:2px,color:#000
-    style API fill:#bff,stroke:#333,stroke-width:2px,color:#000
-```
+<img width="1155" height="1174" alt="image" src="https://github.com/user-attachments/assets/25182828-4ed7-4c07-9ccd-8470d4779774" />
 
 ## 🚀 Installation and Run
 

@@ -28,6 +28,42 @@ This project is a service for processing orders.
 
 ---
 
+
+```mermaid
+flowchart TD
+    %% Producers
+    P[Test Orders] --> K[Kafka Topic]
+
+    %% Kafka consumer
+    K -->|valid| C[Service Consumer]
+    K -->|invalid| DLQ[Kafka DLQ]
+
+    %% Repository + DB + Cache
+    C --> R[Repository]
+    R -->|save| DB[(Postgres)]
+    R -->|save| Cache[In-Memory Cache]
+
+    %% Cache warm-up at startup
+    DB -.warmup.-> Cache
+    %% Cache miss fallback inside Repository
+    Cache -.miss.-> DB
+
+    %% REST API GET
+    API[API GET /orders/:uid] -->|request| R
+    R -->|read| Cache
+    Cache -->|response| API
+
+    %% Colors + black text
+    style P fill:#f9f,stroke:#333,stroke-width:2px,color:#000
+    style K fill:#bbf,stroke:#333,stroke-width:2px,color:#000
+    style DLQ fill:#fbb,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#bfb,stroke:#333,stroke-width:2px,color:#000
+    style R fill:#ffb,stroke:#333,stroke-width:2px,color:#000
+    style DB fill:#bbb,stroke:#333,stroke-width:2px,color:#000
+    style Cache fill:#fbf,stroke:#333,stroke-width:2px,color:#000
+    style API fill:#bff,stroke:#333,stroke-width:2px,color:#000
+```
+
 ## 🚀 Installation and Run
 
 ### 1️⃣ Clone the repository and configure `.env`

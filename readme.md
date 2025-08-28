@@ -80,4 +80,5 @@ make run
 ```bash
 make post-get-order
 ```
+Note: If you want to view the service demo GIF again, please refresh the page.
 ![Demo](order_show.gif)

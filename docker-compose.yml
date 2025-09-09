@@ -82,6 +82,8 @@ services:
   sender:
     image: bash:5.2.21
     container_name: sender
+    volumes:
+      - "./send_get_scripts:/send_get_scripts/" 
     depends_on:
       kafka:
         condition: service_healthy
@@ -92,5 +94,6 @@ services:
       until kcat -b kafka:29092 -L; do sleep 2; done; 
       tail -f /dev/null
       "
+
 volumes:
   pgdata:

@@ -57,11 +57,11 @@ func LoadConfig() *Config {
 			User:     getEnv("DB_USER", "postgres"),
 			Password: getEnv("DB_PASSWORD", "postgres"),
 			Name:     getEnv("DB_NAME", "orders"),
-			Host:     getEnv("DB_HOST", "host.docker.internal"),
+			Host:     getEnv("DB_HOST", "localhost"),
 			Port:     getEnv("DB_PORT", "5432"),
 		},
 		Kafka: KafkaConfig{
-			Broker:   getEnv("KAFKA_BROKER", "host.docker.internal:9092"),
+			Broker:   getEnv("KAFKA_BROKER", "localhost:9092"),
 			Topic:    getEnv("KAFKA_TOPIC", "orders"),
 			TopicDLQ: getEnv("KAFKA_TOPIC_DLQ", "orders_dlq"),
 			Group:    getEnv("KAFKA_GROUP", "order-consumer-group"),

@@ -89,7 +89,7 @@ services:
       sh -c "
       apk update && 
       apk add --no-cache jq kcat && 
-      until kcat -b kafka:9092 -L; do sleep 2; done; 
+      until kcat -b kafka:29092 -L; do sleep 2; done; 
       tail -f /dev/null
       "
 volumes:

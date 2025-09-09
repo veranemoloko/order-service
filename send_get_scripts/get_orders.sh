@@ -1,6 +1,6 @@
 #!/bin/bash
 UID_FILE="send_get_scripts/sample_data/uids.txt"
-BASE_URL="http://host.docker.internal:8081/orders"
+BASE_URL="localhost:8081/orders"
 
 if command -v jq >/dev/null 2>&1; then
   HAS_JQ=true

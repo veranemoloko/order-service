@@ -42,16 +42,8 @@ services:
       - /bin/sh
       - -c
       - |
-        echo "Waiting for Kafka to be ready..."
-        # Пробуем подключиться к внутреннему порту Kafka
-        until kafka-topics --bootstrap-server kafka:29092 --list; do 
-          echo "Kafka not ready yet, waiting..."
-          sleep 5; 
-        done
-        echo "Kafka is ready, creating topics..."
         kafka-topics --create --if-not-exists --topic orders --partitions 2 --replication-factor 1 --bootstrap-server kafka:29092
         kafka-topics --create --if-not-exists --topic orders-dlq --partitions 1 --replication-factor 1 --bootstrap-server kafka:29092
-        echo "Topics created successfully"
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -83,7 +75,7 @@ services:
     image: bash:5.2.21
     container_name: sender
     volumes:
-      - "./send_get_scripts:/send_get_scripts/" 
+    - "./send_get_scripts:/send_get_scripts/" 
     depends_on:
       kafka:
         condition: service_healthy
@@ -91,9 +83,8 @@ services:
       sh -c "
       apk update && 
       apk add --no-cache jq kcat && 
-      until kcat -b kafka:29092 -L; do sleep 2; done; 
+      until kcat -b kafka:9092 -L; do sleep 2; done; 
       tail -f /dev/null
       "
-
 volumes:
   pgdata:

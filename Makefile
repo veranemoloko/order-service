@@ -13,6 +13,7 @@ rebuild: down up
 
 # --- Data generation ---
 gen:
+	@echo "\033[1;35m--------- Data generation ---------\033[0m"
 	rm -rf send_get_scripts/sample_data
 	go run generator/gen_orders.go
 
@@ -21,15 +22,10 @@ run:
 	@echo "\033[1;35m--------- Running service ---------\033[0m"
 	@go run cmd/order_app/main.go
 
-post-get-order:
-	@echo "\033[1;35m--------- Generating orders ---------\033[0m"
-	@$(MAKE) gen
-	@sleep 2
+post-order:
 	@echo "\033[1;35m--------- Posting orders ---------\033[0m"
 	@./send_get_scripts/post_orders.sh
-	@sleep 5
-	@echo "\033[1;35m--------- Getting orders ---------\033[0m"
-	@./send_get_scripts/get_orders.sh
+	@cat ./send_get_scripts/sample_data/uids.txt
 	
 check-go:
 	golint ./...

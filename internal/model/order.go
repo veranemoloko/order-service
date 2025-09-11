@@ -1,20 +1,18 @@
 package model
 
-import "time"
-
 // Order represents a customer order
 type Order struct {
-	OrderUID          string    `json:"order_uid"          validate:"required" gorm:"type:varchar(255);primaryKey"`
-	TrackNumber       string    `json:"track_number"       validate:"required,alphanumunicode" gorm:"type:varchar(255);not null"`
-	Entry             string    `json:"entry"              validate:"required,alphanumunicode" gorm:"type:varchar(50);not null"`
-	Locale            string    `json:"locale"             validate:"required" gorm:"type:varchar(10);not null"`
-	InternalSignature string    `json:"internal_signature" validate:"-" gorm:"type:varchar(255)"`
-	CustomerID        string    `json:"customer_id"        validate:"required,alphanumunicode,min=1,max=64" gorm:"type:varchar(255);not null"`
-	DeliveryService   string    `json:"delivery_service"   validate:"required,ascii,max=50" gorm:"type:varchar(255);not null"`
-	Shardkey          string    `json:"shardkey"           validate:"required,numeric" gorm:"type:varchar(50);not null"`
-	SmID              int       `json:"sm_id"              validate:"required,gt=0" gorm:"not null"`
-	DateCreated       time.Time `json:"date_created"       validate:"required" gorm:"not null"`
-	OofShard          string    `json:"oof_shard"          validate:"required,numeric" gorm:"type:varchar(50);not null"`
+	OrderUID          string `json:"order_uid"          validate:"required" gorm:"type:varchar(255);primaryKey"`
+	TrackNumber       string `json:"track_number"       validate:"required,alphanumunicode" gorm:"type:varchar(255);not null"`
+	Entry             string `json:"entry"              validate:"required,alphanumunicode" gorm:"type:varchar(50);not null"`
+	Locale            string `json:"locale"             validate:"required" gorm:"type:varchar(10);not null"`
+	InternalSignature string `json:"internal_signature" validate:"-" gorm:"type:varchar(255)"`
+	CustomerID        string `json:"customer_id"        validate:"required,alphanumunicode,min=1,max=64" gorm:"type:varchar(255);not null"`
+	DeliveryService   string `json:"delivery_service"   validate:"required,ascii,max=50" gorm:"type:varchar(255);not null"`
+	Shardkey          string `json:"shardkey"           validate:"required,numeric" gorm:"type:varchar(50);not null"`
+	SmID              int    `json:"sm_id"              validate:"required,gt=0" gorm:"not null"`
+	DateCreated       string `json:"date_created"       validate:"required" gorm:"type:varchar(50);not null"`
+	OofShard          string `json:"oof_shard"          validate:"required,numeric" gorm:"type:varchar(50);not null"`
 
 	DeliveryID uint     `json:"-"`
 	Delivery   Delivery `json:"delivery"                   gorm:"foreignKey:DeliveryID"`
@@ -61,7 +59,7 @@ type Item struct {
 	Price       int    `json:"price"        validate:"required,gt=0"                         gorm:"not null"`
 	Name        string `json:"name"         validate:"required,ascii,max=255"                gorm:"type:varchar(255);not null"`
 	Sale        int    `json:"sale"         validate:"gte=0,lte=100"                         gorm:"not null"`
-	Size        string `json:"size"         validate:"-"                                     gorm:"type:varchar(50);not null"`
+	Size        string `json:"size"         validate:"-"                                     gorm:"type:varchar(50)"`
 	TotalPrice  int    `json:"total_price"  validate:"required,gt=0"                         gorm:"not null"`
 	NmID        int    `json:"nm_id"        validate:"required,gt=0"                         gorm:"not null"`
 	Brand       string `json:"brand"        validate:"required,max=255"                      gorm:"type:varchar(255);not null"`

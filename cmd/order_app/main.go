@@ -116,7 +116,7 @@ func runKafkaConsumer(ctx context.Context, consumer *kafka.Consumer, repo *datab
 }
 
 func runHTTPServer(cfg *config.Config, repo *database.Repository) *http.Server {
-	router := gin.Default()
+	router := gin.New()
 	h := httpDelivery.NewHandler(repo)
 	h.RegisterRoutes(router)
 

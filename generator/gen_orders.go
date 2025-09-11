@@ -60,7 +60,7 @@ func generateUpdateOrders(baseOrders []model.Order, r *mathrand.Rand) []model.Or
 	updates := make([]model.Order, 0, len(baseOrders))
 	for _, order := range baseOrders {
 		order.Items[0].Price += r.Intn(200)
-		order.DateCreated = time.Now()
+		order.DateCreated = fmt.Sprintf("2021-11-2%d06:22:19Z", r.Intn(9))
 		updates = append(updates, order)
 	}
 	return updates
@@ -96,7 +96,7 @@ func newOrder(r *mathrand.Rand) model.Order {
 		DeliveryService:   "meest",
 		Shardkey:          fmt.Sprintf("%d", r.Intn(10)+1),
 		SmID:              r.Intn(100),
-		DateCreated:       time.Now(),
+		DateCreated:       fmt.Sprintf("2021-11-2%d06:22:19Z", r.Intn(9)),
 		OofShard:          "1",
 		Delivery: model.Delivery{
 			Name:    "Test " + randString(5),
